@@ -1,32 +1,34 @@
-how to intstall liquid
+How to install liquid
 ======================
 
 
-prerquisites: you must have installed rrdtool.
 
 
-Using rrdtool for monitoring of the SBMS4080
+
+Prerequisites
+-------------
+
+Of course the rrdtool must be installed on the linux-systems, along with bc and tr which are needed by the shell-scripts
+
+sudo apt-get install rrdtool tr bc cu lightppd
 
 
-Streaming the sample data into a logfile
+Instead of lightppd you may also choose apache2.
 
 
-For the purpose of datalogging it is necessary, to capture or stream the data to a file. This can be done under linux in different ways, for example by a little terminal function, which is standard part of python and therefore available in the standard-installation of most linuxes. It can be started in a unix-shell by the command:
+Optional you can do a 
 
-python -m serial.tools.miniterm -p /dev/ttyUSB0 -b 9600 -q > mysampledatafile.log
+sudo apt-get install nfs-common ftp
 
-whereas you should be in the working directory of your sampledata-visualization-application or respectively your rrdtool database. Afterwards, leave the shell-window open and open a new one for continuing. (The minitertm can later be stopped by closing the first window or by the key-combination STRG+ALT_Gr+])
+for accessing logging data by nfs and if you want to push diagrams to an external webpage by ftp
+
 
 
 
 
 
 DataBase-entry and visualization / creation of diagramm-curves with rrdtool
-
-
-Of course before the rrdtool must be installed on the linux-systems, otherwise you can do it in the shell with
-
-sudo apt-get install rrdtool
+---------------------------------------------------------------------------
 
 Furthermore you need one or more database-files for the sample-data, normally you use one file for each sensor.
 
@@ -65,7 +67,14 @@ Thats the responsibility of the "gettemp.sh"-script, which retrieves the incomin
 
 Next, the script "erzeugepng.sh" generates the diagramms as graphical .png-file, according to the recent data in the rrdtool-DataBase.
 
-This should be repeated in an continuing-loop by starting these two scripts periodically (and automatically) from the /etc/crontab, by appending the following lines to the crontab:
+
+
+
+
+Configuring /etc/crontab for continuos data-sampling
+---------------------------------------------------
+
+The scripts should be called in an continuing-loop by starting these two scripts periodically (and automatically) from the /etc/crontab, by appending the following lines to the crontab:
 
 
 # myrrd sensors
@@ -81,7 +90,22 @@ This entry means, that each 1 minute the data will be retrieved from the logfile
 
 
 
+Streaming the sample data into a logfile
+----------------------------------------
+
+
+For the purpose of datalogging it is necessary, to capture or stream the data to a file. This can be done under linux in different ways, for example by a little terminal function, which is standard part of python and therefore available in the standard-installation of most linuxes. It can be started in a unix-shell by the command:
+
+python -m serial.tools.miniterm -p /dev/ttyUSB0 -b 9600 -q > mysampledatafile.log
+
+whereas you should be in the working directory of your sampledata-visualization-application or respectively your rrdtool database. Afterwards, leave the shell-window open and open a new one for continuing. (The minitertm can later be stopped by closing the first window or by the key-combination STRG+ALT_Gr+])
+
+
+
+
+
 Displaying the logging-diagramms on the LAN or the Internet
+-----------------------------------------------------------
 
 
 On the linux-system there must be also running a little webserver, like apache, or it can also be another, smaller one. Usually the default-settings of a webserver point towards the directory /var/www, which means, here must be placed, which should become visible from each workstation (meaning: can be accessed by eacht webbrowser) at he local network as a web-page containing the diagrams. If your browse from your own PC, then there even must be no webserver-process running, because you can access the webpage located at your harddisk directly.
@@ -134,13 +158,6 @@ Accordingly, the file "index.html" should contain the following code (The file b
 So the webpage will not only be shown once when called, but will be each 60 seconds automatically refreshed.
 
 Yout can use the example-scripts, to customize everything to your special needs, like adding more sensors (meaning, more rrd-files), or additionally time-ranges / logging-periods, e.g. for weekly, monthly or even anually logging. Check the rrdtool-documentation for details.
-
-
-
-
-
-
-
 
 
 
