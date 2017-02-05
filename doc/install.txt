@@ -1,0 +1,13 @@
+how to intstall liquid
+======================
+
+
+prerquisites: you must have installed rrdtool.
+
+
+
+
+
+
+
+
