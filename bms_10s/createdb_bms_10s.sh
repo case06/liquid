@@ -1,0 +1,40 @@
+#!/bin/sh
+
+MYHOME=/home/pi/liquid/bms_10s
+
+/usr/bin/rrdtool create $MYHOME/rrdtool/bms.rrd --step 60 \
+DS:c0:GAUGE:120:U:U \
+DS:c1:GAUGE:120:U:U \
+DS:c2:GAUGE:120:U:U \
+DS:c3:GAUGE:120:U:U \
+DS:c4:GAUGE:120:U:U \
+DS:c5:GAUGE:120:U:U \
+DS:c6:GAUGE:120:U:U \
+DS:c7:GAUGE:120:U:U \
+DS:c8:GAUGE:120:U:U \
+DS:c9:GAUGE:120:U:U \
+DS:c10:GAUGE:120:U:U \
+DS:c11:GAUGE:120:U:U \
+DS:c12:GAUGE:120:U:U \
+DS:c13:GAUGE:120:U:U \
+DS:c14:GAUGE:120:U:U \
+DS:bat_volt:GAUGE:120:U:U \
+DS:bat_amp:GAUGE:120:U:U \
+DS:sol_amp:GAUGE:120:U:U \
+DS:load_amp:GAUGE:120:U:U \
+DS:bat_soc:GAUGE:120:U:U \
+DS:tmp1:GAUGE:120:U:U \
+DS:tmp2:GAUGE:120:U:U \
+DS:tmp3:GAUGE:120:U:U \
+DS:bat_dc:GAUGE:120:U:U \
+DS:bat_watt:GAUGE:120:U:U \
+DS:sol_watt:GAUGE:120:U:U \
+DS:load_watt:GAUGE:120:U:U \
+RRA:AVERAGE:0.5:1:260 \
+RRA:AVERAGE:0.5:1:2160 \
+RRA:AVERAGE:0.5:5:2016 \
+RRA:AVERAGE:0.5:15:2880 \
+RRA:AVERAGE:0.5:60:8760 \
+RRA:AVERAGE:0.5:1440:7300 
+
+

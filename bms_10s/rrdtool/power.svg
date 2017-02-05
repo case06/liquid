@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <text x="0" y="48"
+      style="fill: #00dd00; stroke: #999999; font-family: Arial; font-size: 24px;">
+      INPUT: 520 W
+    </text>   
+
+    <text x="0" y="96"
+      style="fill: #00dd00; stroke: #999999; font-family: Arial; font-size: 24px;">
+      OUTPUT: 120 W
+    </text>   
+
+    <text x="0" y="144"
+      style="fill: #00dd00; stroke: #999999; font-family: Arial; font-size: 24px;">
+      BAT_in:  400 W
+    </text>   
+
+</svg>
+
+
