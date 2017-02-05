@@ -26,17 +26,6 @@ for accessing logging data by nfs and if you want to push diagrams to an externa
 
 
 
-Streaming the sample data into a logfile
-----------------------------------------
-
-
-For the purpose of datalogging it is necessary, to capture or stream the data to a file. This can be done under linux in different ways, for example by a little terminal function, which is standard part of python and therefore available in the standard-installation of most linuxes. It can be started in a unix-shell by the command:
-
-python -m serial.tools.miniterm -p /dev/ttyUSB0 -b 9600 -q > mysampledatafile.log
-
-whereas you should be in the working directory of your sampledata-visualization-application or respectively your rrdtool database. Afterwards, leave the shell-window open and open a new one for continuing. (The minitertm can later be stopped by closing the first window or by the key-combination STRG+ALT_Gr+])
-
-
 
 
 Download Liquid from GitHub and install it into your local users home
@@ -79,6 +68,21 @@ MYHOME=/home/pi/liquid/bms_10s/
 Replace the word "pi" with the real name of your linux-home-directory, eg.
 
 MYHOME=/home/oliver/liquid/bms_10s
+
+
+
+
+Streaming the sample data into a logfile
+----------------------------------------
+
+
+For the purpose of datalogging it is necessary, to capture or stream the data to a file. This can be done under linux in different ways, for example by a little terminal function, which is standard part of python and therefore available in the standard-installation of most linuxes. It can be started in a unix-shell by the command:
+
+python -m serial.tools.miniterm -p /dev/ttyUSB0 -b 9600 -q > mysampledatafile.log
+
+whereas you should be in the working directory /home/pi/liquid/bms_10s. Afterwards, leave the shell-window open and open a new one for continuing. (The minitertm can later be stopped by closing the first window or by the key-combination STRG+ALT_Gr+])
+
+Another way to get sample-data is by LAN or WLAN [Todo: explain this in detail]
 
 
 
