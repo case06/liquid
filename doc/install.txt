@@ -5,6 +5,139 @@ how to intstall liquid
 prerquisites: you must have installed rrdtool.
 
 
+Using rrdtool for monitoring of the SBMS4080
+
+
+Streaming the sample data into a logfile
+
+
+For the purpose of datalogging it is necessary, to capture or stream the data to a file. This can be done under linux in different ways, for example by a little terminal function, which is standard part of python and therefore available in the standard-installation of most linuxes. It can be started in a unix-shell by the command:
+
+python -m serial.tools.miniterm -p /dev/ttyUSB0 -b 9600 -q > mysampledatafile.log
+
+whereas you should be in the working directory of your sampledata-visualization-application or respectively your rrdtool database. Afterwards, leave the shell-window open and open a new one for continuing. (The minitertm can later be stopped by closing the first window or by the key-combination STRG+ALT_Gr+])
+
+
+
+
+
+DataBase-entry and visualization / creation of diagramm-curves with rrdtool
+
+
+Of course before the rrdtool must be installed on the linux-systems, otherwise you can do it in the shell with
+
+sudo apt-get install rrdtool
+
+Furthermore you need one or more database-files for the sample-data, normally you use one file for each sensor.
+
+To support the creation and the use of the rrdtool, we have prepared a package with three little shell-scripts which use an example-configuration with datastreams from two sensors. This can be customized for your special needs.
+
+Download myrrd.zip and unpack it into your home-directory, so your working directory named myrrd is created.
+
+Go inside, it should look like this:
+
+
+drwxrwxr-x 3 you you 4096 Mar  3 20:34 .
+drwxrwxr-x 3 you you 4096 Mar  3 20:25 ..
+-rwxrwxr-x 1 you you 1136 Mar  3 20:02 createdb.sh
+-rwxrwxr-x 1 you you 7848 Mar  3 20:05 erzeugepng.sh
+-rwxrwxr-x 1 you you  628 Mar  3 20:19 gettemp.sh
+-rw-rw-r-- 1 you you    0 Mar  3 20:12 mysampledatafile.log
+drwxrwxr-x 2 you you 4096 Mar  3 20:34 rrdtool
+
+
+
+You have to go with an editor into each of the script-files named createdb.sh, erzeugepng.sh und gettemp.sh and there manually change the line
+
+MYHOME=/home/your_home/myrrd
+
+Replace the word "your_home" with the real name of your linux-home-directory.r, eg.
+
+MYHOME=/home/oliver/myrrd
+
+Now you have to create the database-files, by starting a shellscript with the command:
+
+./createdb.sh
+
+Afterwards, there will be two files named "kh1.rrd" and "kh2.rrd" created within the subdirectory "rrdtool" and now the ringbuffer-database is ready for storing the logging-data of two sensors.
+
+Thats the responsibility of the "gettemp.sh"-script, which retrieves the incoming data line by line from the above mentioned file mysampladatafile.log, parsing each line to cut out the single values and put them as an entry into the ringbufferdatabase.
+
+Next, the script "erzeugepng.sh" generates the diagramms as graphical .png-file, according to the recent data in the rrdtool-DataBase.
+
+This should be repeated in an continuing-loop by starting these two scripts periodically (and automatically) from the /etc/crontab, by appending the following lines to the crontab:
+
+
+# myrrd sensors
+*/1 *   * * *   root    /home/your_home/myrrd/gettemp.sh > /dev/null 2>&1
+*/2 *   * * *   root    /home/your_home/myrrd/erzeugepng.sh > /dev/null 2>&1
+*/2 *   * * *   root    /home/your_home/myrrd/ebalance.sh > /dev/null 2>&1
+
+
+
+This entry means, that each 1 minute the data will be retrieved from the logfile and written into the DataBase. Each 4 minutes a new diagramm will be produced, or, more precise, the diagramm .png-file will become updated (= overwritten).
+
+
+
+
+
+Displaying the logging-diagramms on the LAN or the Internet
+
+
+On the linux-system there must be also running a little webserver, like apache, or it can also be another, smaller one. Usually the default-settings of a webserver point towards the directory /var/www, which means, here must be placed, which should become visible from each workstation (meaning: can be accessed by eacht webbrowser) at he local network as a web-page containing the diagrams. If your browse from your own PC, then there even must be no webserver-process running, because you can access the webpage located at your harddisk directly.
+
+Since the pictures are physically located at your working-directory /home/your_name/myrrd/rrdtool, you must set an symbolic link on each, at /var/www, by a command like:
+
+ln -s /home/your_name/myrrd/rrdtool/temp4h.png temp4h.png
+
+Repeat that for the other pictures also.
+
+If you check that with
+
+ls -al /var/www/myrrd/
+
+then you must see something similar like
+
+
+total 12
+drwxr-xr-x 2 root root 4096 Mar  5  2014 .
+drwxr-xr-x 4 root root 4096 Mar  5  2014 ..
+-rw-r--r-- 1 root root  441 Mar  5  2014 index.html
+-rw-r--r-- 1 root root  441 Mar  5  2014 balancer.html
+lrwxrwxrwx 1 root root   47 May 21  2013 temp36h.png -> /home/your_home/myrrd/rrdtool/temp36h.png
+lrwxrwxrwx 1 root root   46 May 21  2013 temp4h.png -> /home/your_home/myrrd/rrdtool/temp4h.png
+
+
+
+Accordingly, the file "index.html" should contain the following code (The file balancer.html looks similar. You can find both as template in the ~/myrrd/rrdtool directory.):
+
+
+
+<html>
+<meta http-equiv='refresh' content='60'/>
+<head>
+</head>
+<body bgcolor="#000000" text="ffffff">
+<br><br>
+<img src="temp4h.png">
+<br><br>
+<img src="temp36h.png">
+<br><br>
+</body>
+</html>
+
+
+
+
+
+
+So the webpage will not only be shown once when called, but will be each 60 seconds automatically refreshed.
+
+Yout can use the example-scripts, to customize everything to your special needs, like adding more sensors (meaning, more rrd-files), or additionally time-ranges / logging-periods, e.g. for weekly, monthly or even anually logging. Check the rrdtool-documentation for details.
+
+
+
+
 
 
 
