@@ -193,13 +193,9 @@ Accordingly, the file "index.html" should contain the following code (The file b
 </html>
 
 
-
-
-
-
 So the webpage will not only be shown once when called, but will be each 60 seconds automatically refreshed.
 
-Yout can use the example-scripts, to customize everything to your special needs, like adding more sensors (meaning, more rrd-files), or additionally time-ranges / logging-periods, e.g. for weekly, monthly or even anually logging. Check the rrdtool-documentation for details.
+Yout can use the example-scripts, to customize everything to your special needs, like adding more sensors (e.g., more cells, like in a bms_15s), or additionally time-ranges / logging-periods, e.g. for weekly, monthly or even anually logging. Check the rrdtool-documentation for details.
 
 
 
