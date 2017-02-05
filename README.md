@@ -6,7 +6,7 @@
 Liquid is a server-frontend for visualizing logging-data from external sources, like sensory samples, logfiles, events and other kind of timelines.  Therefore it makes heavy use of the ringbuffer-database "rrdtool" (see http://oss.oetiker.ch/rrdtool/) as core database to store the data in an efficient and resource-saving manner. The ringbuffer-topolgy enables liquid to be used as a kind of live-monitoring system for processes with a certain inertia, like temperatur sensors or battery-cell monitoring. This gives you an overall graphical survey about the states of these processes.
 
 
-![Title]https://raw.githubusercontent.com/case06/liquid/master/screenshots/bms_10s_main.png
+![Titlescreen](https://raw.githubusercontent.com/case06/liquid/master/screenshots/bms_10s_main.png)
 
 
 The liquid-application itself consists mainly of a few shell-scripts, which care for fulfilling two tasks:
