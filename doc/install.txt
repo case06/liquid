@@ -26,47 +26,91 @@ for accessing logging data by nfs and if you want to push diagrams to an externa
 
 
 
-
-DataBase-entry and visualization / creation of diagramm-curves with rrdtool
----------------------------------------------------------------------------
-
-Furthermore you need one or more database-files for the sample-data, normally you use one file for each sensor.
-
-To support the creation and the use of the rrdtool, we have prepared a package with three little shell-scripts which use an example-configuration with datastreams from two sensors. This can be customized for your special needs.
-
-Download myrrd.zip and unpack it into your home-directory, so your working directory named myrrd is created.
-
-Go inside, it should look like this:
+Streaming the sample data into a logfile
+----------------------------------------
 
 
-drwxrwxr-x 3 you you 4096 Mar  3 20:34 .
-drwxrwxr-x 3 you you 4096 Mar  3 20:25 ..
--rwxrwxr-x 1 you you 1136 Mar  3 20:02 createdb.sh
--rwxrwxr-x 1 you you 7848 Mar  3 20:05 erzeugepng.sh
--rwxrwxr-x 1 you you  628 Mar  3 20:19 gettemp.sh
--rw-rw-r-- 1 you you    0 Mar  3 20:12 mysampledatafile.log
-drwxrwxr-x 2 you you 4096 Mar  3 20:34 rrdtool
+For the purpose of datalogging it is necessary, to capture or stream the data to a file. This can be done under linux in different ways, for example by a little terminal function, which is standard part of python and therefore available in the standard-installation of most linuxes. It can be started in a unix-shell by the command:
+
+python -m serial.tools.miniterm -p /dev/ttyUSB0 -b 9600 -q > mysampledatafile.log
+
+whereas you should be in the working directory of your sampledata-visualization-application or respectively your rrdtool database. Afterwards, leave the shell-window open and open a new one for continuing. (The minitertm can later be stopped by closing the first window or by the key-combination STRG+ALT_Gr+])
 
 
 
-You have to go with an editor into each of the script-files named createdb.sh, erzeugepng.sh und gettemp.sh and there manually change the line
 
-MYHOME=/home/your_home/myrrd
+Download Liquid from GitHub and install it into your local users home
+---------------------------------------------------------------------
 
-Replace the word "your_home" with the real name of your linux-home-directory.r, eg.
+You need one or more special rrdtool database-files for the sample-data, which must be created freshly on each new installation to fullfill the demands of the individual hardware architecture (e.G. ARM, 32bit on a RaspberryPi).
 
-MYHOME=/home/oliver/myrrd
+To support the creation and the use of the database-file, we have prepared a package with three little shell-scripts which use an example-configuration with datastreams from a LibreSolar BMS with 10s-configuration (meaning: the batterypack consists of 10s cells). This can be customized for your special needs.
 
-Now you have to create the database-files, by starting a shellscript with the command:
 
-./createdb.sh
+Go into your home with:
 
-Afterwards, there will be two files named "kh1.rrd" and "kh2.rrd" created within the subdirectory "rrdtool" and now the ringbuffer-database is ready for storing the logging-data of two sensors.
+cd ~
 
-Thats the responsibility of the "gettemp.sh"-script, which retrieves the incoming data line by line from the above mentioned file mysampladatafile.log, parsing each line to cut out the single values and put them as an entry into the ringbufferdatabase.
 
-Next, the script "erzeugepng.sh" generates the diagramms as graphical .png-file, according to the recent data in the rrdtool-DataBase.
+and clone the liquid repository from github with:
 
+git clone https://github.com/case06/liquid
+
+
+This should result in creating within your home a directory for all your liquid monitors. It contains a subdirectory named "bms_10s", which is the working-directory for the given monitoring-application example.
+
+
+Go inside, it should look similar like this:
+
+total 151888
+-rw-r--r-- 1 pi pi         0 Feb  5 16:37 bms_10s.log
+-rwxr-xr-x 1 pi pi       913 Jan 30 20:41 createdb_bms_10s.sh*
+-rwxr-xr-x 1 pi pi      6370 Jan 30 22:24 erzeugepng_bms_10s.sh*
+-rwxr-xr-x 1 pi pi      3572 Jan 30 21:11 get_ftdi_bms_10s.sh*
+-rwxr-xr-x 1 pi pi       725 Jan 30 22:58 myupload.sh*
+drwxr-xr-x 2 pi pi      4096 Jan 30 21:27 rrdtool/
+-rw-r--r-- 1 pi pi         0 Feb  5 15:03 test.log
+
+
+If you are not on a RaspberryPi and using the default useraccount "pi", you have to go with an editor into each of the script-files named createdb_bms_10s.sh, get_ftdi_bms_10s.sh and erzeugepng_bms_10s.sh and there manually change the line
+
+MYHOME=/home/pi/liquid/bms_10s/
+
+Replace the word "pi" with the real name of your linux-home-directory, eg.
+
+MYHOME=/home/oliver/liquid/bms_10s
+
+
+
+
+Create the Ringbuffer-Database
+------------------------------
+
+Now you have to create the database-file, by starting a shellscript with the command:
+
+./createdb_bms_10s.sh
+
+Afterwards, there will be a file named "bms.rrd" created within the subdirectory "rrdtool" and now the ringbuffer-database is ready for storing the logging-data of a Libresolar BMS in 10s configuration.
+
+
+
+
+Feed the Database with sensory sample-data
+------------------------------------------
+
+Thats the responsibility of the "get_ftdi_bms_10s.sh"-script, which retrieves the incoming data line by line from the above mentioned file bms_10s.log, parsing each line to cut out the single values and put them as an entry into the ringbufferdatabase:
+
+./get_ftdi_bms_10s.sh
+
+
+
+
+Generate the diagrams
+---------------------
+
+Next, the script "erzeugepng_bms_10s.sh" generates the diagramms as graphical .png-files, according to the recent data in the rrdtool-DataBase:
+
+./erzeugepng_bms_10s.sh
 
 
 
@@ -77,28 +121,20 @@ Configuring /etc/crontab for continuos data-sampling
 The scripts should be called in an continuing-loop by starting these two scripts periodically (and automatically) from the /etc/crontab, by appending the following lines to the crontab:
 
 
-# myrrd sensors
-*/1 *   * * *   root    /home/your_home/myrrd/gettemp.sh > /dev/null 2>&1
-*/2 *   * * *   root    /home/your_home/myrrd/erzeugepng.sh > /dev/null 2>&1
-*/2 *   * * *   root    /home/your_home/myrrd/ebalance.sh > /dev/null 2>&1
+### Datalogging BMS_10s
+*/1 *   * * *   root    /home/pi/liquid/bms_10s/get_ftdi_bms_10s.sh > /dev/null 2>&1
+*/2 *   * * *   root    /home/pi/liquid/bms_10s/erzeugepng_bms_10s.sh > /dev/null 2>&1
+### Upload BMS10s-diagramms to makeable-server
+#*/4 *   * * *   root    /home/pi/liquid/bms_10s/myupload.sh > /dev/null 2>&1
+
+
+
 
 
 
 This entry means, that each 1 minute the data will be retrieved from the logfile and written into the DataBase. Each 4 minutes a new diagramm will be produced, or, more precise, the diagramm .png-file will become updated (= overwritten).
 
 
-
-
-
-Streaming the sample data into a logfile
-----------------------------------------
-
-
-For the purpose of datalogging it is necessary, to capture or stream the data to a file. This can be done under linux in different ways, for example by a little terminal function, which is standard part of python and therefore available in the standard-installation of most linuxes. It can be started in a unix-shell by the command:
-
-python -m serial.tools.miniterm -p /dev/ttyUSB0 -b 9600 -q > mysampledatafile.log
-
-whereas you should be in the working directory of your sampledata-visualization-application or respectively your rrdtool database. Afterwards, leave the shell-window open and open a new one for continuing. (The minitertm can later be stopped by closing the first window or by the key-combination STRG+ALT_Gr+])
 
 
 
