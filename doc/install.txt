@@ -8,7 +8,7 @@ How to install liquid
 Prerequisites
 -------------
 
-Of course the rrdtool must be installed on the linux-systems, along with bc and tr which are needed by the shell-scripts
+Of course the rrdtool must be installed on the linux-systems, along with bc and tr which are needed by the shell-scripts, so type:
 
 sudo apt-get install rrdtool tr bc cu lightppd
 
@@ -16,9 +16,10 @@ sudo apt-get install rrdtool tr bc cu lightppd
 Instead of lightppd you may also choose apache2.
 
 
-Optional you can do a 
+Optional you can do:
 
 sudo apt-get install nfs-common ftp
+
 
 for accessing logging data by nfs and if you want to push diagrams to an external webpage by ftp
 
@@ -33,7 +34,7 @@ Download Liquid from GitHub and install it into your local users home
 
 You need one or more special rrdtool database-files for the sample-data, which must be created freshly on each new installation to fullfill the demands of the individual hardware architecture (e.G. ARM, 32bit on a RaspberryPi).
 
-To support the creation and the use of the database-file, we have prepared a package with three little shell-scripts which use an example-configuration with datastreams from a LibreSolar BMS with 10s-configuration (meaning: the batterypack consists of 10s cells). This can be customized for your special needs.
+To support the creation and the use of the database-file, we have prepared a package with three little shell-scripts which use an example-configuration named "bms_10s" with datastreams from a LibreSolar BMS with 10s-configuration (meaning: the batterypack consists of 10s cells). This can be customized for your special needs.
 
 
 Go into your home with:
@@ -46,7 +47,7 @@ and clone the liquid repository from github with:
 git clone https://github.com/case06/liquid
 
 
-This should result in creating within your home a directory for all your liquid monitors. It contains a subdirectory named "bms_10s", which is the working-directory for the given monitoring-application example.
+This should result in creating within your home a directory named "liquid" for all your liquid monitors. It contains a subdirectory named "bms_10s", which is the working-directory for the given monitoring-application example.
 
 
 Go inside, it should look similar like this:
@@ -61,11 +62,12 @@ drwxr-xr-x 2 pi pi      4096 Jan 30 21:27 rrdtool/
 -rw-r--r-- 1 pi pi         0 Feb  5 15:03 test.log
 
 
-If you are not on a RaspberryPi and using the default useraccount "pi", you have to go with an editor into each of the script-files named createdb_bms_10s.sh, get_ftdi_bms_10s.sh and erzeugepng_bms_10s.sh and there manually change the line
+If you are not on a RaspberryPi and therefore not using the default useraccount "pi", you have to go with an editor into each of the script-files named createdb_bms_10s.sh, get_ftdi_bms_10s.sh and erzeugepng_bms_10s.sh and there manually change the line:
 
 MYHOME=/home/pi/liquid/bms_10s/
 
-Replace the word "pi" with the real name of your linux-home-directory, eg.
+
+Replace the word "pi" with the real name of your linux-home-directory, eg.:
 
 MYHOME=/home/oliver/liquid/bms_10s
 
