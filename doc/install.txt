@@ -27,9 +27,12 @@ for accessing logging data by nfs and if you want to push diagrams to an externa
 Download Liquid from GitHub and install it into your local users home
 ---------------------------------------------------------------------
 
-You need one or more special rrdtool database-files for the sample-data, which must be created freshly on each new installation to fullfill the demands of the individual hardware architecture (e.G. ARM, 32bit on a RaspberryPi).
+You need one or more special rrdtool database-files for the sample-data, which must be created freshly on each new installation to 
+fullfill the demands of the individual hardware architecture (e.G. ARM, 32bit on a RaspberryPi).
 
-To support the creation and the use of the database-file, we have prepared a package with three little shell-scripts which use an example-configuration named "bms_10s" with datastreams from a LibreSolar BMS with 10s-configuration (meaning: the batterypack consists of 10s cells). This can be customized for your special needs.
+To support the creation and the use of the database-file, we have prepared a package with three little shell-scripts which use an 
+example-configuration named "bms_10s" with datastreams from a LibreSolar BMS with 10s-configuration (meaning: the batterypack 
+consists of 10s cells). This can be customized for your special needs.
 
 
 Go into your home with:
@@ -42,7 +45,8 @@ and clone the liquid repository from github with:
 git clone https://github.com/case06/liquid
 
 
-This should result in creating within your home a directory named "liquid" for all your liquid monitors. It contains a subdirectory named "bms_10s", which is the working-directory for the given monitoring-application example.
+This should result in creating within your home a directory named "liquid" for all your liquid monitors. It contains a subdirectory 
+named "bms_10s", which is the working-directory for the given monitoring-application example.
 
 
 Go inside, it should look similar like this:
@@ -57,7 +61,8 @@ drwxr-xr-x 2 pi pi      4096 Jan 30 21:27 rrdtool/
 -rw-r--r-- 1 pi pi         0 Feb  5 15:03 test.log
 
 
-If you are not on a RaspberryPi and therefore not using the default useraccount "pi", you have to go with an editor into each of the script-files named createdb_bms_10s.sh, get_ftdi_bms_10s.sh and erzeugepng_bms_10s.sh and there manually change the line:
+If you are not on a RaspberryPi and therefore not using the default useraccount "pi", you have to go with an editor into each of the 
+script-files named createdb_bms_10s.sh, get_ftdi_bms_10s.sh and erzeugepng_bms_10s.sh and there manually change the line:
 
 MYHOME=/home/pi/liquid/bms_10s/
 
@@ -72,7 +77,10 @@ MYHOME=/home/oliver/liquid/bms_10s
 Streaming the sample data into a logfile
 ----------------------------------------
 
-There are two ways of getting the logging-samples into liquid, either by accessing the sensors through the network (LAN or WLAN) or by connecting the target device directly to the liquid-server (e.g. RaspberryPi) by a serial connection on a USB port and capture or stream the data to a file. This can be done under linux in different ways. You can use a terminal programm like "miniterm" (not reommended) or "cu".  Just go into the working directory with:
+There are two ways of getting the logging-samples into liquid, either by accessing the sensors through the network (LAN or WLAN) or by 
+connecting the target device directly to the liquid-server (e.g. RaspberryPi) by a serial connection on a USB port and capture or stream 
+the data to a file. This can be done under linux in different ways. You can use a terminal programm like "miniterm" (not reommended) 
+or "cu".  Just go into the working directory with:
 
 cd /home/pi/liquid/bms_10s
 
@@ -82,7 +90,9 @@ and there start cu with:
 cu -l /dev/ttyACM0 -s 115200 > bms_10s.log
 
 
-A maybe more elegant way ist to redirect everything that is coming from the device into the logfile with the "cat" command.  But first you have to make sure that the USB port has got the correct baudrate of 115200 Baud.  To check the baudrate for the USB port /dev/ttyACM0 (which is probably the right one one RaspberryPi, others can be possibly ttyACM1, ttyUSB0 or ttyUSB1) type:
+A maybe more elegant way ist to redirect everything that is coming from the device into the logfile with the "cat" command.  But first you 
+have to make sure that the USB port has got the correct baudrate of 115200 Baud.  To check the baudrate for the USB port /dev/ttyACM0 (which 
+is probably the right one one RaspberryPi, others can be possibly ttyACM1, ttyUSB0 or ttyUSB1) type:
 
 stty -F /dev/ttyACM0
 
@@ -98,22 +108,31 @@ Then redirect the datastream from this USB port into the logfile with:
 cat /dev/ttyACM0 > bms_10s.log &
 
 
-The "&" moves the process into the background where it runs forever or until the server will be rebootet. You can either do this always by hand or implement this into your startup routines. [Todo: explain, how to implement something into the startup routines]
+The "&" moves the process into the background where it runs forever or until the server will be rebootet. You can either do this always by 
+hand or implement this into your startup routines. [Todo: explain, how to implement something into the startup routines]
 
-Once the process is running in the background, every data that is coming along the USB port /dev/ttyACM0 will be immediately piped/dumped into the logfile.  You can check this by:
+Once the process is running in the background, every data that is coming along the USB port /dev/ttyACM0 will be immediately piped/dumped 
+into the logfile.  You can check this by:
 
 tail -f bms_10s.log
 
-If everything runs fine, you can see one line with data after the other becomes appended to the logfile.  To stop the "tail"-command use the key-combination:
+
+If everything runs fine, you can see one line with data after the other becomes appended to the logfile.  To stop the "tail"-command use the 
+key-combination:
 
 ctrl c
 
-Note that this only stops the displaying of what happens to the logfile, but the data-dumping itself is still running continuosly in the background because its needed for the liquid application.
+
+Note that this only stops the displaying of what happens to the logfile, but the data-dumping itself is still running continuosly in the 
+background because its needed for the liquid application.
 
 
-Another way to get sample-data is by LAN or WLAN but this is not yet implemented within the example (however its just changing one line in the get-script) and will be following soon. [Todo: implement WLAN/LAN and explain this in detail]
+Another way to get sample-data is by LAN or WLAN but this is not yet implemented within the example (however its just changing one line in 
+the get-script) and will be following soon. [Todo: implement WLAN/LAN and explain this in detail]
 
 But for now you have already a usable input-datastream running.
+
+[Todo: explain, how to blank the logfile periodically (e.g. one time per week or month) by cron, to avoid running out of harddisk-space once.
 
 
 
@@ -125,7 +144,8 @@ Now you have to create the database-file, by starting a shellscript with the com
 
 ./createdb_bms_10s.sh
 
-Afterwards, there will be a file named "bms.rrd" created within the subdirectory "rrdtool" and now the ringbuffer-database is ready for storing the logging-data of a Libresolar BMS in 10s configuration.
+Afterwards, there will be a file named "bms.rrd" created within the subdirectory "rrdtool" and now the ringbuffer-database is ready for storing 
+the logging-data of a Libresolar BMS in 10s configuration.
 
 
 
@@ -133,7 +153,8 @@ Afterwards, there will be a file named "bms.rrd" created within the subdirectory
 Feed the Database with sensory sample-data
 ------------------------------------------
 
-Thats the responsibility of the "get_ftdi_bms_10s.sh"-script, which retrieves the incoming data line by line from the above mentioned file bms_10s.log, parsing each line to cut out the single values and put them as an entry into the ringbufferdatabase:
+Thats the responsibility of the "get_ftdi_bms_10s.sh"-script, which retrieves the incoming data line by line from the above mentioned file 
+bms_10s.log, parsing each line to cut out the single values and put them as an entry into the ringbufferdatabase:
 
 ./get_ftdi_bms_10s.sh
 
@@ -153,7 +174,8 @@ Next, the script "erzeugepng_bms_10s.sh" generates the diagramms as graphical .p
 Configuring /etc/crontab for continuos data-sampling
 ---------------------------------------------------
 
-The scripts should be called in an continuing-loop by starting these two scripts periodically (and automatically) from the /etc/crontab, by appending the following lines to the crontab:
+The scripts should be called in an continuing-loop by starting these two scripts periodically (and automatically) from the /etc/crontab, 
+by appending the following lines to the crontab:
 
 
 ### Datalogging BMS_10s
@@ -163,9 +185,12 @@ The scripts should be called in an continuing-loop by starting these two scripts
 #*/4 *   * * *   root    /home/pi/liquid/bms_10s/myupload.sh > /dev/null 2>&1
 
 
-This entry means, that each 1 minute the data will be retrieved from the logfile and written into the DataBase. Each 2 minutes a new set of diagramms will be produced, or, more precise, the diagramm .png-files will become updated (= overwritten).
+This entry means, that each 1 minute the data will be retrieved from the logfile and written into the DataBase. Each 2 minutes a new set of 
+diagramms will be produced, or, more precise, the diagramm .png-files will become updated (= overwritten).
 
-The last line contains a call to an upload-script that pushes all the updated diagramms to a remote web-server (e.g. your webspace within the internet) by ftp. Uncomment this line to make the update of the remote site every 4 minutes. Before you have to edit the myupload.sh script and set there your servers adress and your login and password.
+The last line contains a call to an upload-script that pushes all the updated diagramms to a remote web-server (e.g. your webspace on the 
+internet) by ftp. Uncomment this line to make the update of the remote site every 4 minutes. Before you have to edit the myupload.sh script 
+and set there your servers adress and your login and password.
 
 
 
@@ -174,9 +199,15 @@ Displaying the logging-diagramms on the LAN or the Internet
 -----------------------------------------------------------
 
 
-On the linux-system there must be also running a little webserver, like apache, or it can also be another, smaller one, like "lighttpd". Usually the default-settings of a webserver point towards the directory /var/www/html, which means, here must everything be placed (e.g. in a subdirectory named /var/www/html/bms_10s), which should become visible from each workstation (meaning: can be accessed by any webbrowser from each desktop-pc on the local network) as a web-page containing the diagrams. If you have the liquid thing running on your own desktop-PC instead of a dedicated external server, then no webserver-process is needed, because you can access the webpage located at your harddisk directly. This may be ok and helpful for testing purposes.
+On the linux-system there must be also running a little webserver, like apache, or it can also be another, smaller one, like "lighttpd". 
+Usually the default-settings of a webserver point towards the directory /var/www/html, which means, here must everything be placed (e.g. in a 
+subdirectory named /var/www/html/bms_10s), which should become visible from each workstation (meaning: can be accessed by any webbrowser from 
+each desktop-pc on the local network) as a web-page containing the diagrams. If you have the liquid thing running on your own desktop-PC instead 
+of a dedicated external server, then no webserver-process is needed, because you can access the webpage located at your harddisk directly. This 
+may be ok and helpful for testing purposes.
 
-Since the pictures are physically located at your working-directory /home/pi/liquid/bms_10s/rrdtool, you must set an symbolic link on each into the web-directory.  But first it must be created, for this purpose you should become root with:
+Since the pictures are physically located at your working-directory /home/pi/liquid/bms_10s/rrdtool, you must set an symbolic link on each into 
+the web-directory.  But first it must be created, for this purpose you should become root with:
 
 sudo su
 
@@ -251,10 +282,16 @@ lrwxrwxrwx 1 pi pi   48 Jan 30 21:21 sbms7t_yield.png -> /home/pi/liquid/bms_10s
 -rw-r--r-- 1 pi pi 3018 Jan 30 21:27 temp.svg
 
 
-[Note: The way with the symbolic links is possibly not the best of all in terms of security, but may be sufficient for a small home-automation system running at your local network at home. In a wider environment and more unsecure network a serious system adminstrator would mybe prefer the following way: Instead of setting up the web-directory as root and setting symbolic links to the users home, you could add the user pi to the group "www-data". Then edit the erzeugepng_bms_10s.sh script and change all the location-path's of the generated .png-files so, that they become directly generated into the web-dir. Maybe you then also have to make sure, that the perodically calls from /etc/crontabA were made as user pi instead of root. [Todo: check this]]
+[Note: The way with the symbolic links is possibly not the best of all in terms of security, but may be sufficient for a small home-automation 
+system running at your local network at home. In a wider environment and more unsecure network a serious system adminstrator would mybe prefer 
+the following way: Instead of setting up the web-directory as root and setting symbolic links to the users home, you could add the user pi to 
+the group "www-data". Then edit the erzeugepng_bms_10s.sh script and change all the location-path's of the generated .png-files so, that they 
+become directly generated into the web-dir. Maybe you then also have to make sure, that the perodically calls from cron were made as 
+user pi instead of root. [Todo: check this]]
 
 
-You can use the example-scripts, to customize everything to your special needs, like adding more sensors (e.g., more cells, like in a bms_15s), or additionally time-ranges / logging-periods, e.g. for weekly, monthly or even anually logging. Check the rrdtool-documentation for details.
+You can use the example-scripts, to customize everything to your special needs, like adding more sensors (e.g., more cells, like in a bms_15s), 
+or additionally time-ranges / logging-periods, e.g. for weekly, monthly or even anually logging. Check the rrdtool-documentation for details.
 
 
 ---
