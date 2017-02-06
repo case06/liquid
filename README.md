@@ -1,9 +1,7 @@
 # liquid
 
 
-
-
-Liquid is a server-frontend for visualizing logging-data from external sources, like sensory samples, logfiles, events and other kind of timelines.  Therefore it makes heavy use of the ringbuffer-database "rrdtool" (see http://oss.oetiker.ch/rrdtool/) as core database to store the data in an efficient and resource-saving manner. The ringbuffer-topolgy enables liquid to be used as a kind of live-monitoring system for processes with a certain inertia, like temperatur sensors or battery-cell monitoring. This gives you an overall graphical survey about the states of these processes.
+Liquid is a server-frontend for visualizing logging-data from external sources, like sensory samples, logfiles, events and other kind of timelines.  Therefore it makes heavy use of the ringbuffer-database "rrdtool" (see http://oss.oetiker.ch/rrdtool/) as core database to store the data in an efficient and resource-saving manner. The ringbuffer-topology enables liquid to be used as a kind of live-monitoring system for processes with a certain inertia, like temperatur sensors or battery-cell monitoring. This gives you an overall graphical survey about the states of these processes.
 
 
 ![Titlescreen](https://raw.githubusercontent.com/case06/liquid/master/screenshots/bms_10s_main.png)
@@ -23,7 +21,7 @@ Liquid is thought and optimized for running on a Raspberry Pi as server, but it 
 
 The basic structure of a liquid application consists of a liquid directory within your home, eg "/home/pi/liquid", in which one or more independent (from each other) liquid monitors can be hosted, e.g. "home/pi/liquid/bms_10s".  The point is, that one liquid server can be host for a whole number of several monitoring applications, thats the reason why it is designed modular and running preferably on its own separate server. All these monitors can then be accessed from everywhere on the local network, or even from the internet, what makes it IoT-enabled ;) and of course it can receive data from remote sensors anywhere on the network, acting as an IoT-Host.
 
-The application directory can be named arbitrary and contains alls the logfiles and the mentioned shell-scripts, of which some become frequently triggered by /etc/crontab. There is furthermore a directory named "rrdtool", which contains the rrdtool-database, the generated diagram-pics and some html-files, which can be used locally or in an appropriate webspace, like /var/www/html, accessed through a webserver-daemons like apache or lightttpd.
+The application directory (here: "bms_10s") can be named arbitrary and contains alls the logfiles and the mentioned shell-scripts, of which some become frequently triggered by /etc/crontab. It contains furthermore a directory named "rrdtool", which contains the rrdtool-database, the generated diagram-pics and some html-files, which can be used locally or in an appropriate webspace, like /var/www/html, accessed through a webserver-daemon like apache or lightttpd.
 
 
 For more detailed installation info see ![doc/install.txt](https://github.com/case06/liquid/blob/master/doc/install.txt)
