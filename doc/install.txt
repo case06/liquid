@@ -118,8 +118,8 @@ piped/dumped into the logfile.  You can check this by:
 tail -f bms_10s.log
 
 
-If everything runs fine, you can see one line with data after the other becomes appended to the logfile.  To stop the "tail"-command 
-use the key-combination:
+If everything runs fine, you can see one line with data after the other becomes appended to the logfile.  
+To stop the "tail"-command use the key-combination:
 
 ctrl c
 
@@ -201,15 +201,15 @@ Displaying the logging-diagramms on the LAN or the Internet
 -----------------------------------------------------------
 
 
-On the linux-system there must be also running a little webserver, like apache, or it can also be another, smaller one, like "lighttpd". 
-Usually the default-settings of a webserver point towards the directory /var/www/html, which means, here must everything be placed (e.g. 
-in a subdirectory named /var/www/html/bms_10s), which should become visible from each workstation (meaning: can be accessed by any 
-webbrowser from each desktop-pc on the local network) as a web-page containing the diagrams. If you have the liquid thing running on your 
-own desktop-PC instead of a dedicated external server, then no webserver-process is needed, because you can access the webpage located at 
-your harddisk directly. This may be ok and helpful for testing purposes.
+On the linux-system there must be also running a little webserver, like apache, or it can also be another, smaller one, like 
+"lighttpd".  Usually the default-settings of a webserver point towards the directory /var/www/html, which means, here must 
+everything be placed (e.g.  in a subdirectory named /var/www/html/bms_10s), which should become visible from each workstation 
+(meaning: can be accessed by any webbrowser from each desktop-pc on the local network) as a web-page containing the diagrams. 
+If you have the liquid thing running on your own desktop-PC instead of a dedicated external server, then no webserver-process 
+is needed, because you can access the webpage located at your harddisk directly. This may be ok and helpful for testing purposes.
 
-Since the pictures are physically located at your working-directory /home/pi/liquid/bms_10s/rrdtool, you must set an symbolic link on each 
-into the web-directory.  But first it must be created, for this purpose you should become root with:
+Since the pictures are physically located at your working-directory /home/pi/liquid/bms_10s/rrdtool, you must set an symbolic 
+link on each into the web-directory.  But first it must be created, for this purpose you should become root with:
 
 sudo su
 
