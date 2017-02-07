@@ -92,7 +92,7 @@ cu -l /dev/ttyACM0 -s 115200 > bms_10s.log
 
 A maybe more elegant way ist to redirect everything that is coming from the device into the logfile with the "cat" command.  
 But first you have to make sure that the USB port has got the correct baudrate of 115200 Baud.  To check the baudrate for 
-the USB port /dev/ttyACM0 (which is probably the right one one RaspberryPi, others can be possibly ttyACM1, ttyUSB0 or ttyUSB1) 
+the USB port /dev/ttyACM0 (which is probably the right one on RaspberryPi, others can be possibly ttyACM1, ttyUSB0 or ttyUSB1) 
 type:
 
 stty -F /dev/ttyACM0
@@ -176,8 +176,8 @@ rrdtool-DataBase:
 Configuring /etc/crontab for continuos data-sampling
 ---------------------------------------------------
 
-The scripts should be called in an continuing-loop by starting these two scripts periodically (and automatically) from the 
-/etc/crontab, by appending the following lines to the crontab:
+The scripts should be called in an continuing-loop by starting these two scripts periodically (and automatically) from 
+cron, by appending (as root) the following lines to the /etc/crontab:
 
 
 ### Datalogging BMS_10s
@@ -286,7 +286,7 @@ lrwxrwxrwx 1 pi pi   48 Jan 30 21:21 sbms7t_yield.png -> /home/pi/liquid/bms_10s
 
 [Note: The way with the symbolic links is possibly not the best of all in terms of security, but may be sufficient for a small 
 home-automation system running at your local network at home. In a wider environment and more unsecure network a serious system 
-adminstrator would mybe prefer the following way: Instead of setting up the web-directory as root and setting symbolic links to 
+adminstrator would probably prefer the following way: Instead of setting up the web-directory as root and setting symbolic links to 
 the users home, you could add the user pi to the group "www-data". Then edit the erzeugepng_bms_10s.sh script and change all the 
 location-path's of the generated .png-files so, that they become directly generated into the web-dir. Maybe you then also have 
 to make sure, that the perodically calls from cron were made as user pi instead of root. [Todo: check this]]
