@@ -72,6 +72,11 @@ Replace the word "pi" with the real name of your linux-home-directory, eg.:
 MYHOME=/home/oliver/liquid/bms_10s
 
 
+A more comofortable workaround would be to add a user named "pi" to your linux and the clone the liquid repository directly into the users 
+pi home.
+
+
+
 
 
 Streaming the sample data into a logfile
