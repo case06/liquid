@@ -1,0 +1,307 @@
+How to install liquid
+======================
+
+
+
+Prerequisites
+-------------
+
+Of course the rrdtool must be installed on the linux-systems, along with bc and tr which are needed by the shell-scripts, so type:
+
+sudo apt-get install rrdtool tr bc cu lighttpd
+
+
+Instead of lighttpd you may also choose apache2.
+
+
+Optional you can do:
+
+sudo apt-get install ftp nfs-common
+
+
+for accessing logging data by nfs and if you want to push diagrams to an external webpage by ftp
+
+
+
+
+Download Liquid from GitHub and install it into your local users home
+---------------------------------------------------------------------
+
+You need one or more special rrdtool database-files for the sample-data, which must be created freshly on each new installation to 
+fullfill the demands of the individual hardware architecture (e.G. ARM, 32bit on a RaspberryPi).
+
+To support the creation and the use of the database-file, we have prepared a package with three little shell-scripts which use an 
+example-configuration named "bms_10s" with datastreams from a LibreSolar BMS with 10s-configuration (meaning: the batterypack 
+consists of 10s cells). This can be customized for your special needs.
+
+
+Go into your home with:
+
+cd ~
+
+
+and clone the liquid repository from github with:
+
+git clone https://github.com/case06/liquid
+
+
+This should result in creating within your home a directory named "liquid" for all your liquid monitors. It contains a subdirectory 
+named "bms_10s", which is the working-directory for the given monitoring-application example.
+
+
+Go inside, it should look similar like this:
+
+total 151888
+-rw-r--r-- 1 pi pi         0 Feb  5 16:37 bms_10s.log
+-rwxr-xr-x 1 pi pi       913 Jan 30 20:41 createdb_bms_10s.sh*
+-rwxr-xr-x 1 pi pi      6370 Jan 30 22:24 erzeugepng_bms_10s.sh*
+-rwxr-xr-x 1 pi pi      3572 Jan 30 21:11 get_ftdi_bms_10s.sh*
+-rwxr-xr-x 1 pi pi       725 Jan 30 22:58 myupload.sh*
+drwxr-xr-x 2 pi pi      4096 Jan 30 21:27 rrdtool/
+-rw-r--r-- 1 pi pi         0 Feb  5 15:03 test.log
+
+
+If you are not on a RaspberryPi and therefore not using the default useraccount "pi", you have to go with an editor into each 
+of the script-files named createdb_bms_10s.sh, get_ftdi_bms_10s.sh and erzeugepng_bms_10s.sh and there manually change the line:
+
+MYHOME=/home/pi/liquid/bms_10s/
+
+
+Replace the word "pi" with the real name of your linux-home-directory, eg.:
+
+MYHOME=/home/oliver/liquid/bms_10s
+
+
+A more comofortable workaround would be to add a user named "pi" to your linux and the clone the liquid repository directly into the users 
+pi home.
+
+
+
+
+
+Streaming the sample data into a logfile
+----------------------------------------
+
+There are two ways of getting the logging-samples into liquid, either by accessing the sensors through the network (LAN or WLAN) 
+or by connecting the target device directly to the liquid-server (e.g. RaspberryPi) by a serial connection on a USB port and 
+capture or stream the data to a file. This can be done under linux in different ways. You can use a terminal programm like 
+"miniterm" (not reommended) or "cu".  Just go into the working directory with:
+
+cd /home/pi/liquid/bms_10s
+
+
+and there start cu with:
+
+cu -l /dev/ttyACM0 -s 115200 > bms_10s.log
+
+
+A maybe more elegant way ist to redirect everything that is coming from the device into the logfile with the "cat" command.  
+But first you have to make sure that the USB port has got the correct baudrate of 115200 Baud.  To check the baudrate for 
+the USB port /dev/ttyACM0 (which is probably the right one on RaspberryPi, others can be possibly ttyACM1, ttyUSB0 or ttyUSB1) 
+type:
+
+stty -F /dev/ttyACM0
+
+
+If the baudrate is not correct then set the correct one by doing:
+
+stty -F /dev/ttyACM0 115200
+
+
+
+Then redirect the datastream from this USB port into the logfile with:
+
+cat /dev/ttyACM0 > bms_10s.log &
+
+
+The "&" moves the process into the background where it runs forever or until the server will be rebootet. You can either do this 
+always by hand or implement this into your startup routines. [Todo: explain, how to implement something into the startup routines]
+
+Once the process is running in the background, every data that is coming along the USB port /dev/ttyACM0 will be immediately 
+piped/dumped into the logfile.  You can check this by:
+
+tail -f bms_10s.log
+
+
+If everything runs fine, you can see one line with data after the other becomes appended to the logfile.  
+To stop the "tail"-command use the key-combination:
+
+ctrl c
+
+
+Note that this only stops the displaying of what happens to the logfile, but the data-dumping itself is still running continuosly 
+in the background because its needed for the liquid application.
+
+
+Another way to get sample-data is by LAN or WLAN but this is not yet implemented within the example (however its just changing one 
+line in the get-script) and will be following soon. [Todo: implement WLAN/LAN and explain this in detail]
+
+But for now you have already a usable input-datastream running.
+
+[Todo: explain, how to blank the logfile periodically (e.g. one time per week or month) by cron, to avoid running out of 
+harddisk-space once.]
+
+
+
+Create the Ringbuffer-Database
+------------------------------
+
+Now you have to create the database-file, by starting a shellscript with the command:
+
+./createdb_bms_10s.sh
+
+Afterwards, there will be a file named "bms.rrd" created within the subdirectory "rrdtool" and now the ringbuffer-database is ready 
+for storing the logging-data of a Libresolar BMS in 10s configuration.
+
+
+
+
+Feed the Database with sensory sample-data
+------------------------------------------
+
+Thats the responsibility of the "get_ftdi_bms_10s.sh"-script, which retrieves the incoming data line by line from the above 
+mentioned file bms_10s.log, parsing each line to cut out the single values and put them as an entry into the ringbufferdatabase:
+
+./get_ftdi_bms_10s.sh
+
+
+
+
+Generate the diagrams
+---------------------
+
+Next, the script "erzeugepng_bms_10s.sh" generates the diagramms as graphical .png-files, according to the recent data in the 
+rrdtool-DataBase:
+
+./erzeugepng_bms_10s.sh
+
+
+
+
+Configuring /etc/crontab for continuos data-sampling
+---------------------------------------------------
+
+The scripts should be called in an continuing-loop by starting these two scripts periodically (and automatically) from 
+cron, by appending (as root) the following lines to the /etc/crontab:
+
+
+### Datalogging BMS_10s
+*/1 *   * * *   root    /home/pi/liquid/bms_10s/get_ftdi_bms_10s.sh > /dev/null 2>&1
+*/2 *   * * *   root    /home/pi/liquid/bms_10s/erzeugepng_bms_10s.sh > /dev/null 2>&1
+### Upload BMS10s-diagramms to makeable-server
+#*/4 *   * * *   root    /home/pi/liquid/bms_10s/myupload.sh > /dev/null 2>&1
+
+
+This entry means, that each 1 minute the data will be retrieved from the logfile and written into the DataBase. Each 2 minutes 
+a new set of diagramms will be produced, or, more precise, the diagramm .png-files will become updated (= overwritten).
+
+The last line contains a call to an upload-script that pushes all the updated diagramms to a remote web-server (e.g. your webspace 
+on the internet) by ftp. Uncomment this line to make the update of the remote site every 4 minutes. Before you have to edit the 
+myupload.sh script and set there your servers adress and your login and password.
+
+
+
+
+Displaying the logging-diagramms on the LAN or the Internet
+-----------------------------------------------------------
+
+
+On the linux-system there must be also running a little webserver, like apache, or it can also be another, smaller one, like 
+"lighttpd".  Usually the default-settings of a webserver point towards the directory /var/www/html, which means, here must 
+everything be placed (e.g.  in a subdirectory named /var/www/html/bms_10s), which should become visible from each workstation 
+(meaning: can be accessed by any webbrowser from each desktop-pc on the local network) as a web-page containing the diagrams. 
+If you have the liquid thing running on your own desktop-PC instead of a dedicated external server, then no webserver-process 
+is needed, because you can access the webpage located at your harddisk directly. This may be ok and helpful for testing purposes.
+
+Since the pictures are physically located at your working-directory /home/pi/liquid/bms_10s/rrdtool, you must set an symbolic 
+link on each into the web-directory.  But first it must be created, for this purpose you should become root with:
+
+sudo su
+
+
+Then go to it with:
+
+cd /var/www/html
+
+
+and create the webdir with:
+
+mkdir bms_10s
+
+
+Now go into it with:
+
+cd bms_10s
+
+
+and create the the first of the symbolic links:
+
+ln -s /home/pi/liquid/bms_10s/rrdtool/sbms4h_balance.png sbms4h_balance.png
+
+
+Repeat that with all the other .png-files.
+
+Also copy all .svg-files to here with:
+
+cp /home/pi/liquid/rrdtool/*.svg .
+
+
+Repeat that with all the .html-files:
+
+cp /home/pi/liquid/rrdtool/*.html .
+
+
+Now you are done. If you check the resulting webdir with:
+
+ls -al /var/www/html/bms_10s
+
+
+then you should see something similar like this:
+
+
+total 28
+-rw-r--r-- 1 pi pi  567 Jan 30 21:16 balancer.html
+-rw-r--r-- 1 pi pi  561 Jan 30 21:16 charger.html
+-rw-r--r-- 1 pi pi  529 Jan 30 21:16 kwh_yield.svg
+-rw-r--r-- 1 pi pi 1196 Jan 30 21:16 lsbms.html
+-rw-r--r-- 1 pi pi  556 Jan 30 21:16 power.html
+-rw-r--r-- 1 pi pi  529 Jan 30 21:16 power.svg
+lrwxrwxrwx 1 pi pi   51 Jan 30 21:18 sbms12m_balance.png -> /home/pi/liquid/bms_10s/rrdtool/sbms12m_balance.png
+lrwxrwxrwx 1 pi pi   50 Jan 30 21:20 sbms12m_charge.png -> /home/pi/liquid/bms_10s/rrdtool/sbms12m_charge.png
+lrwxrwxrwx 1 pi pi   49 Jan 30 21:21 sbms12m_yield.png -> /home/pi/liquid/bms_10s/rrdtool/sbms12m_yield.png
+lrwxrwxrwx 1 pi pi   51 Jan 30 21:19 sbms20j_balance.png -> /home/pi/liquid/bms_10s/rrdtool/sbms20j_balance.png
+lrwxrwxrwx 1 pi pi   50 Jan 30 21:20 sbms20j_charge.png -> /home/pi/liquid/bms_10s/rrdtool/sbms20j_charge.png
+lrwxrwxrwx 1 pi pi   49 Jan 30 21:21 sbms20j_yield.png -> /home/pi/liquid/bms_10s/rrdtool/sbms20j_yield.png
+lrwxrwxrwx 1 pi pi   51 Jan 30 21:18 sbms36h_balance.png -> /home/pi/liquid/bms_10s/rrdtool/sbms36h_balance.png
+lrwxrwxrwx 1 pi pi   50 Jan 30 21:19 sbms36h_charge.png -> /home/pi/liquid/bms_10s/rrdtool/sbms36h_charge.png
+lrwxrwxrwx 1 pi pi   47 Jan 30 21:29 sbms36h_soc.png -> /home/pi/liquid/bms_10s/rrdtool/sbms36h_soc.png
+lrwxrwxrwx 1 pi pi   48 Jan 30 21:29 sbms36h_temp.png -> /home/pi/liquid/bms_10s/rrdtool/sbms36h_temp.png
+lrwxrwxrwx 1 pi pi   49 Jan 30 21:21 sbms36h_yield.png -> /home/pi/liquid/bms_10s/rrdtool/sbms36h_yield.png
+lrwxrwxrwx 1 pi pi   50 Jan 30 21:17 sbms4h_balance.png -> /home/pi/liquid/bms_10s/rrdtool/sbms4h_balance.png
+lrwxrwxrwx 1 pi pi   49 Jan 30 21:19 sbms4h_charge.png -> /home/pi/liquid/bms_10s/rrdtool/sbms4h_charge.png
+lrwxrwxrwx 1 pi pi   48 Jan 30 21:21 sbms4h_yield.png -> /home/pi/liquid/bms_10s/rrdtool/sbms4h_yield.png
+lrwxrwxrwx 1 pi pi   50 Jan 30 21:18 sbms4w_balance.png -> /home/pi/liquid/bms_10s/rrdtool/sbms4w_balance.png
+lrwxrwxrwx 1 pi pi   49 Jan 30 21:20 sbms4w_charge.png -> /home/pi/liquid/bms_10s/rrdtool/sbms4w_charge.png
+lrwxrwxrwx 1 pi pi   48 Jan 30 21:21 sbms4w_yield.png -> /home/pi/liquid/bms_10s/rrdtool/sbms4w_yield.png
+lrwxrwxrwx 1 pi pi   50 Jan 30 21:18 sbms7t_balance.png -> /home/pi/liquid/bms_10s/rrdtool/sbms7t_balance.png
+lrwxrwxrwx 1 pi pi   49 Jan 30 21:20 sbms7t_charge.png -> /home/pi/liquid/bms_10s/rrdtool/sbms7t_charge.png
+lrwxrwxrwx 1 pi pi   48 Jan 30 21:21 sbms7t_yield.png -> /home/pi/liquid/bms_10s/rrdtool/sbms7t_yield.png
+-rw-r--r-- 1 pi pi 3018 Jan 30 21:27 temp.svg
+
+
+[Note: The way with the symbolic links is possibly not the best of all in terms of security, but may be sufficient for a small 
+home-automation system running at your local network at home. In a wider environment and more unsecure network a serious system 
+adminstrator would probably prefer the following way: Instead of setting up the web-directory as root and setting symbolic links to 
+the users home, you could add the user pi to the group "www-data". Then edit the erzeugepng_bms_10s.sh script and change all the 
+location-path's of the generated .png-files so, that they become directly generated into the web-dir. Maybe you then also have 
+to make sure, that the perodically calls from cron were made as user pi instead of root. [Todo: check this]]
+
+
+You can use the example-scripts, to customize everything to your special needs, like adding more sensors (e.g., more cells, like 
+in a bms_15s), or additionally time-ranges / logging-periods, e.g. for weekly, monthly or even anually logging. Check the 
+rrdtool-documentation for details.
+
+
+---
+
+
