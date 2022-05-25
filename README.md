@@ -30,3 +30,7 @@ For more detailed installation info see ![doc/install.txt](https://github.com/ca
 Within this repository, we have the "bms_10s" which can be seen as an example application, but from our point of view it is a purpose on its own, to provide a nice monitoring application to the LibreSolar BMS projekt, see http://libre.solar.  So, others may follow later, but all examples in the liquid-docs and -configurations are related to the "bms_10s" monitor.
 
 
+License:  CC BY-SA 4.0
+
+
+
